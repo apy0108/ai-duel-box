@@ -4,7 +4,7 @@ import NavBar from '@/components/NavBar';
 import Footer from '@/components/Footer';
 import HistoryItem from '@/components/HistoryItem';
 import { useNavigate } from 'react-router-dom';
-import { ClockRewind } from 'lucide-react';
+import { Clock } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 
 export interface HistoryEntry {
@@ -47,7 +47,7 @@ const History: React.FC = () => {
       
       <main className="flex-1 w-full max-w-3xl mx-auto px-4 pt-32 pb-16">
         <div className="flex items-center gap-3 mb-8">
-          <ClockRewind className="w-6 h-6 text-primary" />
+          <Clock className="w-6 h-6 text-primary" />
           <h1 className="text-2xl font-bold">Prompt History</h1>
         </div>
         
