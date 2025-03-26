@@ -5,11 +5,12 @@ import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Settings as SettingsIcon } from 'lucide-react';
+import { Settings as SettingsIcon, Check } from 'lucide-react';
 
 const Settings: React.FC = () => {
   const [geminiKey, setGeminiKey] = useState('');
   const [grokKey, setGrokKey] = useState('');
+  const [saveSuccess, setSaveSuccess] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -22,14 +23,41 @@ const Settings: React.FC = () => {
   }, []);
 
   const handleSaveKeys = () => {
-    // Save API keys to localStorage
-    localStorage.setItem('gemini-api-key', geminiKey);
-    localStorage.setItem('grok-api-key', grokKey);
-    
-    toast({
-      title: "API keys saved",
-      description: "Your API keys have been saved successfully.",
-    });
+    try {
+      // Save API keys to localStorage
+      localStorage.setItem('gemini-api-key', geminiKey);
+      localStorage.setItem('grok-api-key', grokKey);
+      
+      // Verify the keys were actually saved
+      const savedGeminiKey = localStorage.getItem('gemini-api-key');
+      const savedGrokKey = localStorage.getItem('grok-api-key');
+      
+      if (savedGeminiKey !== geminiKey || savedGrokKey !== grokKey) {
+        throw new Error("Failed to save API keys to localStorage");
+      }
+      
+      // Show success state and toast
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 3000);
+      
+      toast({
+        title: "API keys saved",
+        description: "Your API keys have been saved successfully.",
+      });
+      
+      // Log successful save for debugging
+      console.log("API keys saved successfully:", {
+        geminiSaved: Boolean(savedGeminiKey),
+        grokSaved: Boolean(savedGrokKey)
+      });
+    } catch (error) {
+      console.error("Error saving API keys:", error);
+      toast({
+        title: "Error saving API keys",
+        description: "There was a problem saving your API keys. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -82,10 +110,25 @@ const Settings: React.FC = () => {
             
             <Button 
               onClick={handleSaveKeys}
-              className="mt-4 rounded-xl px-6 py-2 h-auto"
+              className={`mt-4 rounded-xl px-6 py-2 h-auto flex items-center gap-2 ${saveSuccess ? 'bg-green-600 hover:bg-green-700' : ''}`}
             >
-              Save API Keys
+              {saveSuccess ? (
+                <>
+                  <Check className="w-4 h-4" />
+                  Saved
+                </>
+              ) : (
+                'Save API Keys'
+              )}
             </Button>
+
+            <div className="mt-4 text-sm">
+              <p className="text-muted-foreground">
+                Current status: {localStorage.getItem('gemini-api-key') && localStorage.getItem('grok-api-key') 
+                  ? <span className="text-green-500 font-medium">Both API keys are set</span> 
+                  : <span className="text-amber-500 font-medium">API keys are missing or incomplete</span>}
+              </p>
+            </div>
           </div>
         </div>
       </main>
