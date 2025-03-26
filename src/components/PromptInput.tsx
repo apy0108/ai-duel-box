@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SendHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -7,10 +7,22 @@ import { Textarea } from '@/components/ui/textarea';
 interface PromptInputProps {
   onSubmit: (prompt: string) => void;
   isLoading: boolean;
+  initialPrompt?: string;
 }
 
-const PromptInput: React.FC<PromptInputProps> = ({ onSubmit, isLoading }) => {
-  const [prompt, setPrompt] = useState('');
+const PromptInput: React.FC<PromptInputProps> = ({ 
+  onSubmit, 
+  isLoading, 
+  initialPrompt = '' 
+}) => {
+  const [prompt, setPrompt] = useState(initialPrompt);
+  
+  // Update prompt when initialPrompt changes
+  useEffect(() => {
+    if (initialPrompt) {
+      setPrompt(initialPrompt);
+    }
+  }, [initialPrompt]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
