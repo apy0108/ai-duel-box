@@ -118,6 +118,106 @@ const Categories: React.FC = () => {
       link: 'https://claude.ai',
       tags: ['chatbot', 'text', 'anthropic'],
       isFree: true
+    },
+    {
+      id: '9',
+      name: 'Flux',
+      description: 'AI-powered platform for creating stylized images, animations, and visual effects.',
+      category: 'Image Generation',
+      imageUrl: 'https://images.unsplash.com/photo-1519638399535-1b036603ac77',
+      link: 'https://flux.ai',
+      tags: ['images', 'animation', 'effects'],
+      isFree: false
+    },
+    {
+      id: '10',
+      name: 'Adobe Firefly',
+      description: 'Creative generative AI models that create images, vectors, and effects with advanced content credentials.',
+      category: 'Image Generation',
+      imageUrl: 'https://images.unsplash.com/photo-1626785774573-4b799315345d',
+      link: 'https://firefly.adobe.com',
+      tags: ['images', 'design', 'adobe'],
+      isFree: false
+    },
+    {
+      id: '11',
+      name: 'Canva AI',
+      description: 'AI-powered image generation and editing tools integrated within the Canva design platform.',
+      category: 'Image Generation',
+      imageUrl: 'https://images.unsplash.com/photo-1545235617-7a424c1a60cc',
+      link: 'https://canva.com',
+      tags: ['design', 'images', 'editing'],
+      isFree: true
+    },
+    {
+      id: '12',
+      name: 'aiXcoder',
+      description: 'AI-powered code assistant that offers context-aware code completion and suggestions.',
+      category: 'Code Assistance',
+      imageUrl: 'https://images.unsplash.com/photo-1555066931-bf19f8fd1085',
+      link: 'https://www.aixcoder.com',
+      tags: ['code', 'programming', 'completion'],
+      isFree: false
+    },
+    {
+      id: '13',
+      name: 'TabNine',
+      description: 'AI code completion assistant that integrates with most popular IDEs and code editors.',
+      category: 'Code Assistance',
+      imageUrl: 'https://images.unsplash.com/photo-1542831371-29b0f74f9713',
+      link: 'https://www.tabnine.com',
+      tags: ['code', 'programming', 'IDE'],
+      isFree: true
+    },
+    {
+      id: '14',
+      name: 'Synthesia',
+      description: 'AI video generation platform that creates professional videos from text in minutes.',
+      category: 'Audio/Video',
+      imageUrl: 'https://images.unsplash.com/photo-1601792954626-da04b4e861a6',
+      link: 'https://www.synthesia.io',
+      tags: ['video', 'generation', 'avatars'],
+      isFree: false
+    },
+    {
+      id: '15',
+      name: 'Runway',
+      description: 'Creative suite with AI tools for video editing, generation, and special effects.',
+      category: 'Audio/Video',
+      imageUrl: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3',
+      link: 'https://runwayml.com',
+      tags: ['video', 'editing', 'effects'],
+      isFree: false
+    },
+    {
+      id: '16',
+      name: 'Google Cloud AutoML',
+      description: 'Suite of machine learning products that enables developers to train high-quality custom models.',
+      category: 'Data Analysis',
+      imageUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71',
+      link: 'https://cloud.google.com/automl',
+      tags: ['data', 'machine learning', 'google'],
+      isFree: false
+    },
+    {
+      id: '17',
+      name: 'Zapier',
+      description: 'Automation platform that connects your apps and automates workflows with AI capabilities.',
+      category: 'Automation',
+      imageUrl: 'https://images.unsplash.com/photo-1563986768711-b3bde3dc821e',
+      link: 'https://zapier.com',
+      tags: ['automation', 'workflow', 'integration'],
+      isFree: true
+    },
+    {
+      id: '18',
+      name: 'n8n',
+      description: 'Open-source workflow automation tool with fair-code licensing and AI-enhanced capabilities.',
+      category: 'Automation',
+      imageUrl: 'https://images.unsplash.com/photo-1597852074816-d933c7d2b988',
+      link: 'https://n8n.io',
+      tags: ['automation', 'workflow', 'open-source'],
+      isFree: true
     }
   ];
 
@@ -143,7 +243,7 @@ const Categories: React.FC = () => {
       <main className="flex-1 w-full max-w-7xl mx-auto px-4 pt-32 pb-16">
         <div className="text-center mb-12 animate-slide-down">
           <h1 className="text-4xl font-bold tracking-tight mb-3">
-            AI Tools Directory
+            AI Fusion Hub Directory
           </h1>
           <p className="text-xl text-foreground/70 max-w-2xl mx-auto">
             Discover the best AI tools across different categories
