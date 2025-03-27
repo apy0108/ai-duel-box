@@ -18,15 +18,18 @@ const Index = () => {
       navigate('/login');
     }
     
-    // Check if API keys are set
-    const geminiKey = localStorage.getItem('gemini-api-key');
-    const grokKey = localStorage.getItem('grok-api-key');
+    // Set provided Grok API key
+    const grokKey = "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";
+    localStorage.setItem('grok-api-key', grokKey);
     
-    if (!geminiKey || !grokKey) {
-      // Show a toast to remind the user to set API keys
+    // Check if Gemini API key is set
+    const geminiKey = localStorage.getItem('gemini-api-key');
+    
+    if (!geminiKey) {
+      // Show a toast to remind the user to set Gemini API key
       toast({
-        title: "API keys not configured",
-        description: "Please set up your API keys in Settings to use the comparison feature.",
+        title: "Gemini API key not configured",
+        description: "Grok API key has been set automatically. Please set up your Gemini API key in Settings to use the comparison feature.",
         action: (
           <button 
             className="px-3 py-1 rounded-md bg-primary text-white text-xs font-medium"
@@ -36,6 +39,13 @@ const Index = () => {
           </button>
         ),
         duration: 5000,
+      });
+    } else {
+      // Notify user that Grok API key has been set
+      toast({
+        title: "Grok API key set",
+        description: "The Grok API key has been automatically configured for you.",
+        duration: 3000,
       });
     }
   }, [navigate, toast]);
