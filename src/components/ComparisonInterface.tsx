@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { v4 as uuidv4 } from 'uuid';
 import { Button } from '@/components/ui/button';
 import { Settings } from 'lucide-react';
+import { callGeminiAPI, callGrokAPI, AI_MODELS } from '@/utils/apiService';
 
 // Import the HistoryEntry type
 import { HistoryEntry } from '@/pages/History';
@@ -16,7 +17,11 @@ const ComparisonInterface: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [geminiOutput, setGeminiOutput] = useState('');
   const [grokOutput, setGrokOutput] = useState('');
+  const [geminiError, setGeminiError] = useState<string | undefined>();
+  const [grokError, setGrokError] = useState<string | undefined>();
   const [keysAvailable, setKeysAvailable] = useState(false);
+  const [geminiModel, setGeminiModel] = useState(AI_MODELS.gemini[0].id);
+  const [grokModel, setGrokModel] = useState(AI_MODELS.grok[0].id);
   const location = useLocation();
   const navigate = useNavigate();
   
@@ -77,6 +82,8 @@ const ComparisonInterface: React.FC = () => {
     setIsLoading(true);
     setGeminiOutput('');
     setGrokOutput('');
+    setGeminiError(undefined);
+    setGrokError(undefined);
     
     // Get API keys from localStorage
     const geminiKey = localStorage.getItem('gemini-api-key');
@@ -90,67 +97,40 @@ const ComparisonInterface: React.FC = () => {
     }
     
     try {
-      console.log("Using API keys:", { 
-        geminiKeyExists: Boolean(geminiKey), 
-        grokKeyExists: Boolean(grokKey)
+      console.log("Using selected models:", { 
+        geminiModel,
+        grokModel
       });
       
       // Make API call to Gemini
-      try {
-        const geminiResponse = await fetchGeminiResponse(inputPrompt, geminiKey);
-        setGeminiOutput(geminiResponse);
-      } catch (error) {
-        console.error("Error with Gemini API:", error);
-        setGeminiOutput("Error fetching response from Gemini. Please check your API key and try again.");
+      const geminiResponse = await callGeminiAPI(inputPrompt, geminiKey, geminiModel);
+      if (geminiResponse.error) {
+        setGeminiError(geminiResponse.error);
+      } else {
+        setGeminiOutput(geminiResponse.text);
       }
       
       // Make API call to Grok
-      try {
-        const grokResponse = await fetchGrokResponse(inputPrompt, grokKey);
-        setGrokOutput(grokResponse);
-      } catch (error) {
-        console.error("Error with Grok API:", error);
-        setGrokOutput("Error fetching response from Grok. Please check your API key and try again.");
+      const grokResponse = await callGrokAPI(inputPrompt, grokKey, grokModel);
+      if (grokResponse.error) {
+        setGrokError(grokResponse.error);
+      } else {
+        setGrokOutput(grokResponse.text);
       }
       
-      setIsLoading(false);
-      
       // Save to history after both responses are received
-      saveToHistory(inputPrompt, 
-        geminiOutput || "Error fetching response from Gemini.", 
-        grokOutput || "Error fetching response from Grok."
+      saveToHistory(
+        inputPrompt, 
+        geminiResponse.text || geminiResponse.error || "Error fetching response", 
+        grokResponse.text || grokResponse.error || "Error fetching response"
       );
       
     } catch (error) {
       console.error('Error fetching AI responses:', error);
       toast.error('Failed to get responses. Please try again.');
+    } finally {
       setIsLoading(false);
     }
-  };
-
-  // Mock functions to simulate API calls - in a real app, these would make actual API calls
-  const fetchGeminiResponse = async (prompt: string, apiKey: string): Promise<string> => {
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    if (!apiKey) {
-      throw new Error("No API key provided");
-    }
-    
-    // For demo purposes, return a simulated response
-    return `Gemini's response to: "${prompt}"\n\nThis is a simulated response using the provided API key. In a real implementation, this would be the actual response from Gemini API.`;
-  };
-  
-  const fetchGrokResponse = async (prompt: string, apiKey: string): Promise<string> => {
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 3000));
-    
-    if (!apiKey) {
-      throw new Error("No API key provided");
-    }
-    
-    // For demo purposes, return a simulated response
-    return `Grok's response to: "${prompt}"\n\nThis is a simulated response using the provided API key. In a real implementation, this would be the actual response from Grok API.`;
   };
 
   const handleGoToSettings = () => {
@@ -186,12 +166,18 @@ const ComparisonInterface: React.FC = () => {
           <OutputBox 
             title="Gemini" 
             content={geminiOutput} 
-            isLoading={isLoading} 
+            isLoading={isLoading}
+            selectedModel={geminiModel}
+            onModelChange={setGeminiModel}
+            error={geminiError}
           />
           <OutputBox 
             title="Grok" 
             content={grokOutput} 
-            isLoading={isLoading} 
+            isLoading={isLoading}
+            selectedModel={grokModel}
+            onModelChange={setGrokModel}
+            error={grokError}
           />
         </div>
       )}
