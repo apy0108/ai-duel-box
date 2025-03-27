@@ -95,30 +95,62 @@ const ComparisonInterface: React.FC = () => {
         grokKeyExists: Boolean(grokKey)
       });
       
-      // Simulate API calls to Gemini and Grok
-      // In a real implementation, these would be actual API calls using the stored keys
-      setTimeout(() => {
-        const geminiResponse = `Gemini's response to: "${inputPrompt}"\n\nThis is a simulated response using the API key${geminiKey ? ' (using your saved key)' : ''}. In a real implementation, this would be the actual response from Gemini API.`;
+      // Make API call to Gemini
+      try {
+        const geminiResponse = await fetchGeminiResponse(inputPrompt, geminiKey);
         setGeminiOutput(geminiResponse);
-      }, 2000);
+      } catch (error) {
+        console.error("Error with Gemini API:", error);
+        setGeminiOutput("Error fetching response from Gemini. Please check your API key and try again.");
+      }
       
-      setTimeout(() => {
-        const grokResponse = `Grok's response to: "${inputPrompt}"\n\nThis is a simulated response using the API key${grokKey ? ' (using your saved key)' : ''}. In a real implementation, this would be the actual response from Grok API.`;
+      // Make API call to Grok
+      try {
+        const grokResponse = await fetchGrokResponse(inputPrompt, grokKey);
         setGrokOutput(grokResponse);
-        setIsLoading(false);
-        
-        // Save to history after both responses are received
-        saveToHistory(inputPrompt, 
-          `Gemini's response to: "${inputPrompt}"\n\nThis is a simulated response using the API key${geminiKey ? ' (using your saved key)' : ''}.`, 
-          `Grok's response to: "${inputPrompt}"\n\nThis is a simulated response using the API key${grokKey ? ' (using your saved key)' : ''}.`
-        );
-      }, 3000);
+      } catch (error) {
+        console.error("Error with Grok API:", error);
+        setGrokOutput("Error fetching response from Grok. Please check your API key and try again.");
+      }
+      
+      setIsLoading(false);
+      
+      // Save to history after both responses are received
+      saveToHistory(inputPrompt, 
+        geminiOutput || "Error fetching response from Gemini.", 
+        grokOutput || "Error fetching response from Grok."
+      );
       
     } catch (error) {
       console.error('Error fetching AI responses:', error);
       toast.error('Failed to get responses. Please try again.');
       setIsLoading(false);
     }
+  };
+
+  // Mock functions to simulate API calls - in a real app, these would make actual API calls
+  const fetchGeminiResponse = async (prompt: string, apiKey: string): Promise<string> => {
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    if (!apiKey) {
+      throw new Error("No API key provided");
+    }
+    
+    // For demo purposes, return a simulated response
+    return `Gemini's response to: "${prompt}"\n\nThis is a simulated response using the provided API key. In a real implementation, this would be the actual response from Gemini API.`;
+  };
+  
+  const fetchGrokResponse = async (prompt: string, apiKey: string): Promise<string> => {
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    
+    if (!apiKey) {
+      throw new Error("No API key provided");
+    }
+    
+    // For demo purposes, return a simulated response
+    return `Grok's response to: "${prompt}"\n\nThis is a simulated response using the provided API key. In a real implementation, this would be the actual response from Grok API.`;
   };
 
   const handleGoToSettings = () => {

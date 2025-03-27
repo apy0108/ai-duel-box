@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowRightLeft, Clock, Settings, LogOut } from 'lucide-react';
+import { ArrowRightLeft, Clock, Settings, LogOut, Grid, Layers } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const NavBar: React.FC = () => {
@@ -23,13 +23,21 @@ const NavBar: React.FC = () => {
   return (
     <nav className="w-full py-6 px-8 flex justify-between items-center glass-morphism fixed top-0 left-0 right-0 z-50 animate-fade-in">
       <Link to="/" className="flex items-center gap-2">
-        <ArrowRightLeft className="w-5 h-5 text-primary" />
-        <h1 className="text-xl font-medium tracking-tight">AI Duel Box</h1>
+        <Layers className="w-5 h-5 text-primary" />
+        <h1 className="text-xl font-medium tracking-tight">AI Fusion Hub</h1>
       </Link>
       
       <div className="flex items-center gap-4">
         {isLoggedIn ? (
           <>
+            <Link 
+              to="/categories" 
+              className="flex items-center gap-1.5 text-sm text-foreground/70 hover:text-foreground transition-colors duration-200"
+            >
+              <Grid className="w-4 h-4" />
+              <span>AI Categories</span>
+            </Link>
+            
             <Link 
               to="/history" 
               className="flex items-center gap-1.5 text-sm text-foreground/70 hover:text-foreground transition-colors duration-200"
