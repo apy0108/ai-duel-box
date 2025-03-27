@@ -62,7 +62,7 @@ const Categories: React.FC = () => {
     {
       id: '3',
       name: 'DALL-E',
-      description: 'Creates images from textual descriptions, pushing the boundaries of what's possible in image generation.',
+      description: "Creates images from textual descriptions, pushing the boundaries of what's possible in image generation.",
       category: 'Image Generation',
       imageUrl: 'https://images.unsplash.com/photo-1518770660439-4636190af475',
       link: 'https://openai.com/dall-e-3',
