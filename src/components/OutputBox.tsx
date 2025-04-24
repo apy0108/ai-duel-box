@@ -5,11 +5,9 @@ import { cn } from '@/lib/utils';
 import ModelSelector from './ModelSelector';
 
 interface OutputBoxProps {
-  title: 'Gemini' | 'Groq';  // Changed from 'Grok' to 'Groq'
+  title: 'Gemini' | 'Groq';
   content: string;
   isLoading: boolean;
-  selectedModel: string;
-  onModelChange: (model: string) => void;
   error?: string;
 }
 
@@ -17,8 +15,6 @@ const OutputBox: React.FC<OutputBoxProps> = ({
   title, 
   content, 
   isLoading,
-  selectedModel,
-  onModelChange,
   error
 }) => {
   return (
@@ -44,10 +40,7 @@ const OutputBox: React.FC<OutputBoxProps> = ({
         </div>
         
         <ModelSelector 
-          aiType={title.toLowerCase() as 'gemini' | 'groq'}  // Changed from 'grok' to 'groq'
-          selectedModel={selectedModel}
-          onChange={onModelChange}
-          disabled={isLoading}
+          aiType={title.toLowerCase() as 'gemini' | 'groq'}
         />
       </div>
       

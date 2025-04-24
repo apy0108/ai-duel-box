@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import PromptInput from './PromptInput';
@@ -6,9 +7,9 @@ import { toast } from 'sonner';
 import { v4 as uuidv4 } from 'uuid';
 import { Button } from '@/components/ui/button';
 import { Settings } from 'lucide-react';
-import { callGeminiAPI, callGroqAPI, AI_MODELS } from '@/utils/apiService';
-
+import { callGeminiAPI, callGroqAPI } from '@/utils/apiService';
 import { HistoryEntry } from '@/pages/History';
+import AINewsFeed from './AINewsFeed';
 
 const ComparisonInterface: React.FC = () => {
   const [prompt, setPrompt] = useState('');
@@ -18,8 +19,6 @@ const ComparisonInterface: React.FC = () => {
   const [geminiError, setGeminiError] = useState<string | undefined>();
   const [groqError, setGroqError] = useState<string | undefined>();
   const [keysAvailable, setKeysAvailable] = useState(false);
-  const [geminiModel, setGeminiModel] = useState(AI_MODELS.gemini[0].id);
-  const [groqModel, setGroqModel] = useState(AI_MODELS.groq[0].id);
   const location = useLocation();
   const navigate = useNavigate();
   
@@ -84,10 +83,9 @@ const ComparisonInterface: React.FC = () => {
     }
     
     try {
-      console.log("Using selected models:", { 
-        geminiModel,
-        groqModel
-      });
+      // Using default models
+      const geminiModel = "gemini-pro";
+      const groqModel = "llama2-70b-4096";
       
       const geminiResponse = await callGeminiAPI(inputPrompt, geminiKey, geminiModel);
       if (geminiResponse.error) {
@@ -151,20 +149,21 @@ const ComparisonInterface: React.FC = () => {
             title="Gemini" 
             content={geminiOutput} 
             isLoading={isLoading}
-            selectedModel={geminiModel}
-            onModelChange={setGeminiModel}
             error={geminiError}
           />
           <OutputBox 
             title="Groq" 
             content={groqOutput} 
             isLoading={isLoading}
-            selectedModel={groqModel}
-            onModelChange={setGroqModel}
             error={groqError}
           />
         </div>
       )}
+      
+      {/* AI News Section */}
+      <div className="w-full max-w-6xl mt-8">
+        <AINewsFeed />
+      </div>
     </div>
   );
 };

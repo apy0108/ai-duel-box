@@ -1,54 +1,20 @@
 
 import React from 'react';
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { AI_MODELS } from '@/utils/apiService';
+import { Gem, Zap } from 'lucide-react';
 
 interface ModelSelectorProps {
-  aiType: 'gemini' | 'groq';  // Updated from 'grok' to 'groq'
-  selectedModel: string;
-  onChange: (value: string) => void;
-  disabled?: boolean;
+  aiType: 'gemini' | 'groq';
 }
 
-const ModelSelector: React.FC<ModelSelectorProps> = ({ 
-  aiType, 
-  selectedModel, 
-  onChange,
-  disabled = false
-}) => {
-  const models = aiType === 'gemini' ? AI_MODELS.gemini : AI_MODELS.groq;
+const ModelSelector: React.FC<ModelSelectorProps> = ({ aiType }) => {
+  const modelInfo = aiType === 'gemini' 
+    ? { name: "Gemini Pro", icon: <Gem className="w-4 h-4 text-blue-500" /> }
+    : { name: "LLaMA2 70B", icon: <Zap className="w-4 h-4 text-purple-500" /> };
 
   return (
-    <div className="w-full flex flex-col gap-1.5">
-      <label className="text-xs font-medium text-muted-foreground">
-        Select Model
-      </label>
-      <Select 
-        value={selectedModel} 
-        onValueChange={onChange}
-        disabled={disabled}
-      >
-        <SelectTrigger 
-          className={`h-8 text-sm ${
-            aiType === 'gemini' ? "border-blue-200" : "border-purple-200"
-          }`}
-        >
-          <SelectValue placeholder="Select model" />
-        </SelectTrigger>
-        <SelectContent>
-          {models.map((model) => (
-            <SelectItem key={model.id} value={model.id}>
-              {model.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+    <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-background/80 border border-border/30">
+      {modelInfo.icon}
+      <span className="text-xs font-medium">{modelInfo.name}</span>
     </div>
   );
 };

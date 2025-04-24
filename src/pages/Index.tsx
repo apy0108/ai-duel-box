@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NavBar from '@/components/NavBar';
@@ -37,37 +38,31 @@ const Index = () => {
   }, [navigate, toast]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center">
+    <div className="min-h-screen flex flex-col items-center bg-gradient-to-b from-white to-blue-50">
       <NavBar />
       
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 pt-32 pb-16 flex flex-col items-center">
-        <div className="text-center mb-12 animate-slide-down">
-          <h1 className="text-4xl font-bold tracking-tight mb-3">
-            AI Fusion Hub Comparison
+      <main className="flex-1 w-full max-w-7xl mx-auto px-4 pt-24 pb-16 flex flex-col items-center">
+        <div className="text-center mb-8 animate-fade-in">
+          <h1 className="text-5xl font-bold tracking-tight mb-3 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            AI Nexus
           </h1>
-          <p className="text-xl text-foreground/70 max-w-2xl mx-auto">
-            Compare outputs from different AI models side by side with the same prompt
+          <p className="text-xl text-foreground/80 max-w-2xl mx-auto">
+            Your central hub for AI tools and model comparison
           </p>
         </div>
         
-        <ComparisonInterface />
-        
-        <div className="mt-12 max-w-2xl w-full bg-blue-50 border border-blue-100 rounded-xl p-4 flex gap-3">
-          <Info className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+        <div className="w-full mb-8 max-w-2xl mx-auto bg-blue-50 border border-blue-100 rounded-xl p-4 flex gap-3">
+          <Info className="w-5 h-5 text-blue-500 flex-shrink-0 mt-1" />
           <div>
-            <h3 className="font-medium text-blue-800 mb-1">Quick Tip</h3>
+            <h3 className="font-medium text-blue-800 mb-1">Welcome to AI Nexus</h3>
             <p className="text-sm text-blue-700">
-              If you're looking for AI tools instead of comparing models, check out our 
-              <span 
-                className="text-primary font-medium cursor-pointer mx-1 hover:underline"
-                onClick={() => navigate('/categories')}
-              >
-                AI Tools Directory
-              </span> 
-              to discover the best AI solutions for your needs.
+              Compare outputs from different AI models side by side and explore the latest 
+              advancements in artificial intelligence. Stay up-to-date with our AI news feed below.
             </p>
           </div>
         </div>
+        
+        <ComparisonInterface />
       </main>
       
       <Footer />
