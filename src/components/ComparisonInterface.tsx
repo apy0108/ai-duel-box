@@ -156,7 +156,7 @@ const ComparisonInterface: React.FC = () => {
             error={geminiError}
           />
           <OutputBox 
-            title="Grok" 
+            title="Groq" 
             content={groqOutput} 
             isLoading={isLoading}
             selectedModel={groqModel}
