@@ -73,22 +73,29 @@ const AINewsFeed: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchNews = async () => {
-      setIsLoading(true);
-      setError(null);
-      
-      try {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        setNews(mockNewsData);
-      } catch (error) {
-        console.error("Failed to fetch AI news:", error);
-        setError("Failed to load news. Please try again later.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const fetchNews = async () => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      // In a real implementation, you would fetch from a news API
+      // For now, we'll simulate loading with mock data
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      const filteredNews = mockNewsData.filter(item => {
+        if (activeTab === 'trending') return true;
+        if (activeTab === 'research') return item.source.name.toLowerCase().includes('research');
+        return true; // 'latest' tab shows all
+      });
+      setNews(filteredNews);
+    } catch (err) {
+      console.error("Failed to fetch AI news:", err);
+      setError("Failed to load news. Please try again later.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchNews();
   }, [activeTab]);
 
@@ -100,6 +107,50 @@ const AINewsFeed: React.FC = () => {
       year: 'numeric'
     }).format(date);
   };
+
+  const renderNewsCards = (newsItems: NewsItem[]) => (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {newsItems.map((item, index) => (
+        <a 
+          key={index} 
+          href={item.url} 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="group"
+          aria-label={`Read article: ${item.title}`}
+        >
+          <Card className="overflow-hidden h-full hover:shadow-xl transition-shadow duration-200 border border-gray-100 group-hover:border-blue-100">
+            {item.urlToImage && (
+              <div className="w-full h-40 overflow-hidden">
+                <img 
+                  src={item.urlToImage} 
+                  alt={item.title}
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  loading="lazy"
+                />
+              </div>
+            )}
+            <CardContent className={cn("p-4", !item.urlToImage && "pt-5")}>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
+                  {item.source.name}
+                </span>
+                <time className="text-xs text-muted-foreground" dateTime={item.publishedAt}>
+                  {formatDate(item.publishedAt)}
+                </time>
+              </div>
+              <h3 className="font-semibold line-clamp-2 group-hover:text-blue-600 transition-colors">
+                {item.title}
+              </h3>
+              <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
+                {item.description}
+              </p>
+            </CardContent>
+          </Card>
+        </a>
+      ))}
+    </div>
+  );
 
   return (
     <div className="w-full">
@@ -135,156 +186,32 @@ const AINewsFeed: React.FC = () => {
               <div className="text-center p-8 text-red-500">
                 <p>{error}</p>
                 <button 
-                  onClick={() => setActiveTab(activeTab)} 
+                  onClick={fetchNews}
                   className="mt-4 text-sm text-primary hover:underline"
                 >
                   Try again
                 </button>
               </div>
             ) : (
-              <>
-                <TabsContent value="latest" className="mt-0">
-                  {isLoading ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {[1, 2, 3, 4].map((i) => (
-                        <Card key={i} className="overflow-hidden">
-                          <Skeleton className="h-48 w-full" />
-                          <CardContent className="p-4">
-                            <Skeleton className="h-4 w-32 mb-2" />
-                            <Skeleton className="h-6 w-full mb-4" />
-                            <Skeleton className="h-4 w-full" />
-                            <Skeleton className="h-4 w-2/3 mt-2" />
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {news.map((item, index) => (
-                        <a 
-                          key={index} 
-                          href={item.url} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="group"
-                        >
-                          <Card className="overflow-hidden h-full hover:shadow-xl transition-shadow duration-200 border border-gray-100 group-hover:border-blue-100">
-                            {item.urlToImage && (
-                              <div className="w-full h-40 overflow-hidden">
-                                <img 
-                                  src={item.urlToImage} 
-                                  alt={item.title} 
-                                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                                />
-                              </div>
-                            )}
-                            <CardContent className={cn("p-4", !item.urlToImage && "pt-5")}>
-                              <div className="flex items-center justify-between mb-2">
-                                <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
-                                  {item.source.name}
-                                </span>
-                                <span className="text-xs text-muted-foreground">
-                                  {formatDate(item.publishedAt)}
-                                </span>
-                              </div>
-                              <h3 className="font-semibold line-clamp-2 group-hover:text-blue-600 transition-colors">
-                                {item.title}
-                              </h3>
-                              <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
-                                {item.description}
-                              </p>
-                            </CardContent>
-                          </Card>
-                        </a>
-                      ))}
-                    </div>
-                  )}
-                </TabsContent>
-                
-                <TabsContent value="trending">
+              <TabsContent value={activeTab} className="mt-0">
+                {isLoading ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {news.slice().reverse().map((item, index) => (
-                      <a 
-                        key={index} 
-                        href={item.url} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="group"
-                      >
-                        <Card className="overflow-hidden h-full hover:shadow-xl transition-shadow duration-200 border border-gray-100 group-hover:border-blue-100">
-                          {item.urlToImage && (
-                            <div className="w-full h-40 overflow-hidden">
-                              <img 
-                                src={item.urlToImage} 
-                                alt={item.title} 
-                                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                              />
-                            </div>
-                          )}
-                          <CardContent className={cn("p-4", !item.urlToImage && "pt-5")}>
-                            <div className="flex items-center justify-between mb-2">
-                              <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
-                                {item.source.name}
-                              </span>
-                              <span className="text-xs text-muted-foreground">
-                                {formatDate(item.publishedAt)}
-                              </span>
-                            </div>
-                            <h3 className="font-semibold line-clamp-2 group-hover:text-blue-600 transition-colors">
-                              {item.title}
-                            </h3>
-                            <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
-                              {item.description}
-                            </p>
-                          </CardContent>
-                        </Card>
-                      </a>
+                    {[1, 2, 3, 4].map((i) => (
+                      <Card key={i} className="overflow-hidden">
+                        <Skeleton className="h-48 w-full" />
+                        <CardContent className="p-4">
+                          <Skeleton className="h-4 w-32 mb-2" />
+                          <Skeleton className="h-6 w-full mb-4" />
+                          <Skeleton className="h-4 w-full" />
+                          <Skeleton className="h-4 w-2/3 mt-2" />
+                        </CardContent>
+                      </Card>
                     ))}
                   </div>
-                </TabsContent>
-                
-                <TabsContent value="research">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {news.filter((_, i) => i % 2 === 0).map((item, index) => (
-                      <a 
-                        key={index} 
-                        href={item.url} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="group"
-                      >
-                        <Card className="overflow-hidden h-full hover:shadow-xl transition-shadow duration-200 border border-gray-100 group-hover:border-blue-100">
-                          {item.urlToImage && (
-                            <div className="w-full h-40 overflow-hidden">
-                              <img 
-                                src={item.urlToImage} 
-                                alt={item.title} 
-                                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                              />
-                            </div>
-                          )}
-                          <CardContent className={cn("p-4", !item.urlToImage && "pt-5")}>
-                            <div className="flex items-center justify-between mb-2">
-                              <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
-                                {item.source.name}
-                              </span>
-                              <span className="text-xs text-muted-foreground">
-                                {formatDate(item.publishedAt)}
-                              </span>
-                            </div>
-                            <h3 className="font-semibold line-clamp-2 group-hover:text-blue-600 transition-colors">
-                              {item.title}
-                            </h3>
-                            <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
-                              {item.description}
-                            </p>
-                          </CardContent>
-                        </Card>
-                      </a>
-                    ))}
-                  </div>
-                </TabsContent>
-              </>
+                ) : (
+                  renderNewsCards(news)
+                )}
+              </TabsContent>
             )}
           </Tabs>
         </CardContent>
