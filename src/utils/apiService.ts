@@ -1,5 +1,4 @@
-
-// API service for Gemini and Grok
+// API service for Gemini and Groq
 
 interface AIResponse {
   text: string;
@@ -13,10 +12,10 @@ export const AI_MODELS = {
     { id: "gemini-1.5-pro", name: "Gemini 1.5 Pro" },
     { id: "gemini-1.5-flash", name: "Gemini 1.5 Flash" }
   ],
-  grok: [
-    { id: "grok-1", name: "Grok-1" },
-    { id: "grok-1.5", name: "Grok-1.5" },
-    { id: "grok-2-mini", name: "Grok-2 Mini" }
+  groq: [
+    { id: "llama2-70b-4096", name: "LLaMA2 70B" },
+    { id: "mixtral-8x7b-32768", name: "Mixtral 8x7B" },
+    { id: "gemma-7b-it", name: "Gemma 7B" }
   ]
 };
 
@@ -77,32 +76,20 @@ export const callGeminiAPI = async (
   }
 };
 
-// Call Grok API
-export const callGrokAPI = async (
+// Call Groq API
+export const callGroqAPI = async (
   prompt: string, 
   apiKey: string,
-  model: string = "grok-1"
+  model: string = "llama2-70b-4096"
 ): Promise<AIResponse> => {
   try {
-    console.log(`Calling Grok API with model: ${model}`);
+    console.log(`Calling Groq API with model: ${model}`);
     
-    // Use simulated response for Grok since the API is not working correctly
-    console.log("Using simulated response for Grok API");
-    
-    // Wait a bit to simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Simulate a response
-    return { 
-      text: `This is a simulated response using the provided API key. In a real implementation, this would be the actual response from Grok API using the ${model} model.\n\nYour prompt was: "${prompt}"\n\nWhen the Grok API is properly configured and accessible, this would show the genuine AI-generated response.` 
-    };
-    
-    /* Commenting out the actual API call that's failing
-    const response = await fetch("https://api.grok.ai/v1/chat/completions", {
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey}`
+        "Authorization": `Bearer ${apiKey}`,
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({
         model: model,
@@ -119,21 +106,19 @@ export const callGrokAPI = async (
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error("Grok API error:", errorData);
+      console.error("Groq API error:", errorData);
       return { 
         text: "", 
-        error: `Error: ${errorData.error?.message || "Failed to get response from Grok"}` 
+        error: `Error: ${errorData.error?.message || "Failed to get response from Groq"}` 
       };
     }
 
     const data = await response.json();
-    
-    // Extract the response text from the Grok API response
     const responseText = data.choices?.[0]?.message?.content || "";
     return { text: responseText };
-    */
+
   } catch (error) {
-    console.error("Error calling Grok API:", error);
+    console.error("Error calling Groq API:", error);
     return { 
       text: "", 
       error: `Error: ${error instanceof Error ? error.message : "Unknown error occurred"}` 

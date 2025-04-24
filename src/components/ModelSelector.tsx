@@ -10,7 +10,7 @@ import {
 import { AI_MODELS } from '@/utils/apiService';
 
 interface ModelSelectorProps {
-  aiType: 'gemini' | 'grok';
+  aiType: 'gemini' | 'groq';
   selectedModel: string;
   onChange: (value: string) => void;
   disabled?: boolean;
@@ -22,7 +22,7 @@ const ModelSelector: React.FC<ModelSelectorProps> = ({
   onChange,
   disabled = false
 }) => {
-  const models = aiType === 'gemini' ? AI_MODELS.gemini : AI_MODELS.grok;
+  const models = aiType === 'gemini' ? AI_MODELS.gemini : AI_MODELS.groq;
 
   return (
     <div className="w-full flex flex-col gap-1.5">
@@ -54,3 +54,4 @@ const ModelSelector: React.FC<ModelSelectorProps> = ({
 };
 
 export default ModelSelector;
+

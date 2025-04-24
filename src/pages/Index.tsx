@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NavBar from '@/components/NavBar';
@@ -12,24 +11,18 @@ const Index = () => {
   const { toast } = useToast();
   
   useEffect(() => {
-    // Check if user is logged in
     const user = localStorage.getItem('user');
     if (!user) {
       navigate('/login');
     }
     
-    // Set provided Grok API key
-    const grokKey = "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";
-    localStorage.setItem('grok-api-key', grokKey);
-    
-    // Check if Gemini API key is set
+    const groqKey = localStorage.getItem('groq-api-key');
     const geminiKey = localStorage.getItem('gemini-api-key');
     
-    if (!geminiKey) {
-      // Show a toast to remind the user to set Gemini API key
+    if (!geminiKey || !groqKey) {
       toast({
-        title: "Gemini API key not configured",
-        description: "Grok API key has been set automatically. Please set up your Gemini API key in Settings to use the comparison feature.",
+        title: "API Keys Not Configured",
+        description: "Please set up your Gemini and Groq API keys in Settings to use the comparison feature.",
         action: (
           <button 
             className="px-3 py-1 rounded-md bg-primary text-white text-xs font-medium"
@@ -39,13 +32,6 @@ const Index = () => {
           </button>
         ),
         duration: 5000,
-      });
-    } else {
-      // Notify user that Grok API key has been set
-      toast({
-        title: "Grok API key set",
-        description: "The Grok API key has been automatically configured for you.",
-        duration: 3000,
       });
     }
   }, [navigate, toast]);

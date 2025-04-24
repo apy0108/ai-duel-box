@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import PromptInput from './PromptInput';
@@ -7,73 +6,63 @@ import { toast } from 'sonner';
 import { v4 as uuidv4 } from 'uuid';
 import { Button } from '@/components/ui/button';
 import { Settings } from 'lucide-react';
-import { callGeminiAPI, callGrokAPI, AI_MODELS } from '@/utils/apiService';
+import { callGeminiAPI, callGroqAPI, AI_MODELS } from '@/utils/apiService';
 
-// Import the HistoryEntry type
 import { HistoryEntry } from '@/pages/History';
 
 const ComparisonInterface: React.FC = () => {
   const [prompt, setPrompt] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [geminiOutput, setGeminiOutput] = useState('');
-  const [grokOutput, setGrokOutput] = useState('');
+  const [groqOutput, setGroqOutput] = useState('');
   const [geminiError, setGeminiError] = useState<string | undefined>();
-  const [grokError, setGrokError] = useState<string | undefined>();
+  const [groqError, setGroqError] = useState<string | undefined>();
   const [keysAvailable, setKeysAvailable] = useState(false);
   const [geminiModel, setGeminiModel] = useState(AI_MODELS.gemini[0].id);
-  const [grokModel, setGrokModel] = useState(AI_MODELS.grok[0].id);
+  const [groqModel, setGroqModel] = useState(AI_MODELS.groq[0].id);
   const location = useLocation();
   const navigate = useNavigate();
   
-  // Check if API keys are available
   useEffect(() => {
     const checkApiKeys = () => {
       const geminiKey = localStorage.getItem('gemini-api-key');
-      const grokKey = localStorage.getItem('grok-api-key');
-      setKeysAvailable(Boolean(geminiKey) && Boolean(grokKey));
+      const groqKey = localStorage.getItem('groq-api-key');
+      setKeysAvailable(Boolean(geminiKey) && Boolean(groqKey));
     };
     
-    // Check on mount
     checkApiKeys();
-    
-    // Re-check whenever the component gets focused
     window.addEventListener('focus', checkApiKeys);
     
     return () => {
       window.removeEventListener('focus', checkApiKeys);
     };
   }, []);
-  
-  // Check for selected prompt from history
+
   useEffect(() => {
     if (location.state?.selectedPrompt) {
       const historyEntry = location.state.selectedPrompt as HistoryEntry;
       setPrompt(historyEntry.prompt);
       setGeminiOutput(historyEntry.geminiResponse);
-      setGrokOutput(historyEntry.grokResponse);
+      setGroqOutput(historyEntry.groqResponse);
       
-      // Clear the location state to prevent reloading the same prompt
       navigate('/', { replace: true });
     }
   }, [location.state, navigate]);
 
-  const saveToHistory = (promptText: string, geminiResponse: string, grokResponse: string) => {
+  const saveToHistory = (promptText: string, geminiResponse: string, groqResponse: string) => {
     const newEntry: HistoryEntry = {
       id: uuidv4(),
       prompt: promptText,
       geminiResponse,
-      grokResponse,
+      groqResponse,
       timestamp: Date.now(),
     };
     
-    // Get existing history
     const existingHistory = localStorage.getItem('prompt-history');
     const history = existingHistory ? JSON.parse(existingHistory) : [];
     
-    // Add new entry and limit to 50 entries
     const updatedHistory = [newEntry, ...history].slice(0, 50);
     
-    // Save back to localStorage
     localStorage.setItem('prompt-history', JSON.stringify(updatedHistory));
   };
 
@@ -81,16 +70,14 @@ const ComparisonInterface: React.FC = () => {
     setPrompt(inputPrompt);
     setIsLoading(true);
     setGeminiOutput('');
-    setGrokOutput('');
+    setGroqOutput('');
     setGeminiError(undefined);
-    setGrokError(undefined);
+    setGroqError(undefined);
     
-    // Get API keys from localStorage
     const geminiKey = localStorage.getItem('gemini-api-key');
-    const grokKey = localStorage.getItem('grok-api-key');
+    const groqKey = localStorage.getItem('groq-api-key');
     
-    // Check if API keys are available
-    if (!geminiKey || !grokKey) {
+    if (!geminiKey || !groqKey) {
       toast.error("API keys are missing. Please set them in Settings.");
       setIsLoading(false);
       return;
@@ -99,10 +86,9 @@ const ComparisonInterface: React.FC = () => {
     try {
       console.log("Using selected models:", { 
         geminiModel,
-        grokModel
+        groqModel
       });
       
-      // Make API call to Gemini
       const geminiResponse = await callGeminiAPI(inputPrompt, geminiKey, geminiModel);
       if (geminiResponse.error) {
         setGeminiError(geminiResponse.error);
@@ -110,19 +96,17 @@ const ComparisonInterface: React.FC = () => {
         setGeminiOutput(geminiResponse.text);
       }
       
-      // Make API call to Grok
-      const grokResponse = await callGrokAPI(inputPrompt, grokKey, grokModel);
-      if (grokResponse.error) {
-        setGrokError(grokResponse.error);
+      const groqResponse = await callGroqAPI(inputPrompt, groqKey, groqModel);
+      if (groqResponse.error) {
+        setGroqError(groqResponse.error);
       } else {
-        setGrokOutput(grokResponse.text);
+        setGroqOutput(groqResponse.text);
       }
       
-      // Save to history after both responses are received
       saveToHistory(
         inputPrompt, 
         geminiResponse.text || geminiResponse.error || "Error fetching response", 
-        grokResponse.text || grokResponse.error || "Error fetching response"
+        groqResponse.text || groqResponse.error || "Error fetching response"
       );
       
     } catch (error) {
@@ -173,11 +157,11 @@ const ComparisonInterface: React.FC = () => {
           />
           <OutputBox 
             title="Grok" 
-            content={grokOutput} 
+            content={groqOutput} 
             isLoading={isLoading}
-            selectedModel={grokModel}
-            onModelChange={setGrokModel}
-            error={grokError}
+            selectedModel={groqModel}
+            onModelChange={setGroqModel}
+            error={groqError}
           />
         </div>
       )}
