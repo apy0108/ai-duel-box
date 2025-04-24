@@ -1,9 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Trending, News, Clock } from 'lucide-react';
+import { TrendingUp, Newspaper, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface NewsItem {
   title: string;
@@ -71,24 +71,19 @@ const AINewsFeed: React.FC = () => {
   const [news, setNews] = useState<NewsItem[]>(mockNewsData);
   const [activeTab, setActiveTab] = useState<string>("latest");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // In a real implementation, you would fetch news from an API here
-    // For now, we'll use the mock data
     const fetchNews = async () => {
       setIsLoading(true);
+      setError(null);
+      
       try {
-        // In a real implementation, you'd make an API call here
-        // For now, we just simulate an API call with a timeout
         await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // In a real scenario, you'd set the news from the API response
-        // setNews(response.data.articles);
-        
-        // For now, we just use our mock data with a slight delay to simulate loading
         setNews(mockNewsData);
       } catch (error) {
         console.error("Failed to fetch AI news:", error);
+        setError("Failed to load news. Please try again later.");
       } finally {
         setIsLoading(false);
       }
@@ -112,7 +107,7 @@ const AINewsFeed: React.FC = () => {
         <CardHeader className="pb-3">
           <div className="flex justify-between items-center">
             <CardTitle className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">
-              AI News & Trends
+              Latest in AI
             </CardTitle>
           </div>
           <CardDescription className="text-base text-muted-foreground">
@@ -127,148 +122,170 @@ const AINewsFeed: React.FC = () => {
                 <span>Latest</span>
               </TabsTrigger>
               <TabsTrigger value="trending" className="flex items-center gap-2">
-                <Trending className="w-4 h-4" />
+                <TrendingUp className="w-4 h-4" />
                 <span>Trending</span>
               </TabsTrigger>
               <TabsTrigger value="research" className="flex items-center gap-2">
-                <News className="w-4 h-4" />
+                <Newspaper className="w-4 h-4" />
                 <span>Research</span>
               </TabsTrigger>
             </TabsList>
             
-            <TabsContent value="latest" className="mt-0">
-              {isLoading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-pulse">
-                  {[1, 2, 3, 4].map((i) => (
-                    <div key={i} className="h-[200px] bg-muted rounded-xl"></div>
-                  ))}
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {news.map((item, index) => (
-                    <a 
-                      key={index} 
-                      href={item.url} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="group"
-                    >
-                      <Card className="overflow-hidden h-full hover:shadow-xl transition-shadow duration-200 border border-gray-100 group-hover:border-blue-100">
-                        {item.urlToImage && (
-                          <div className="w-full h-40 overflow-hidden">
-                            <img 
-                              src={item.urlToImage} 
-                              alt={item.title} 
-                              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                            />
-                          </div>
-                        )}
-                        <CardContent className={cn("p-4", !item.urlToImage && "pt-5")}>
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
-                              {item.source.name}
-                            </span>
-                            <span className="text-xs text-muted-foreground">
-                              {formatDate(item.publishedAt)}
-                            </span>
-                          </div>
-                          <h3 className="font-semibold line-clamp-2 group-hover:text-blue-600 transition-colors">
-                            {item.title}
-                          </h3>
-                          <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
-                            {item.description}
-                          </p>
-                        </CardContent>
-                      </Card>
-                    </a>
-                  ))}
-                </div>
-              )}
-            </TabsContent>
-            
-            <TabsContent value="trending">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {news.slice().reverse().map((item, index) => (
-                  <a 
-                    key={index} 
-                    href={item.url} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="group"
-                  >
-                    <Card className="overflow-hidden h-full hover:shadow-xl transition-shadow duration-200 border border-gray-100 group-hover:border-blue-100">
-                      {item.urlToImage && (
-                        <div className="w-full h-40 overflow-hidden">
-                          <img 
-                            src={item.urlToImage} 
-                            alt={item.title} 
-                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                          />
-                        </div>
-                      )}
-                      <CardContent className={cn("p-4", !item.urlToImage && "pt-5")}>
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
-                            {item.source.name}
-                          </span>
-                          <span className="text-xs text-muted-foreground">
-                            {formatDate(item.publishedAt)}
-                          </span>
-                        </div>
-                        <h3 className="font-semibold line-clamp-2 group-hover:text-blue-600 transition-colors">
-                          {item.title}
-                        </h3>
-                        <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
-                          {item.description}
-                        </p>
-                      </CardContent>
-                    </Card>
-                  </a>
-                ))}
+            {error ? (
+              <div className="text-center p-8 text-red-500">
+                <p>{error}</p>
+                <button 
+                  onClick={() => setActiveTab(activeTab)} 
+                  className="mt-4 text-sm text-primary hover:underline"
+                >
+                  Try again
+                </button>
               </div>
-            </TabsContent>
-            
-            <TabsContent value="research">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {news.filter((_, i) => i % 2 === 0).map((item, index) => (
-                  <a 
-                    key={index} 
-                    href={item.url} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="group"
-                  >
-                    <Card className="overflow-hidden h-full hover:shadow-xl transition-shadow duration-200 border border-gray-100 group-hover:border-blue-100">
-                      {item.urlToImage && (
-                        <div className="w-full h-40 overflow-hidden">
-                          <img 
-                            src={item.urlToImage} 
-                            alt={item.title} 
-                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                          />
-                        </div>
-                      )}
-                      <CardContent className={cn("p-4", !item.urlToImage && "pt-5")}>
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
-                            {item.source.name}
-                          </span>
-                          <span className="text-xs text-muted-foreground">
-                            {formatDate(item.publishedAt)}
-                          </span>
-                        </div>
-                        <h3 className="font-semibold line-clamp-2 group-hover:text-blue-600 transition-colors">
-                          {item.title}
-                        </h3>
-                        <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
-                          {item.description}
-                        </p>
-                      </CardContent>
-                    </Card>
-                  </a>
-                ))}
-              </div>
-            </TabsContent>
+            ) : (
+              <>
+                <TabsContent value="latest" className="mt-0">
+                  {isLoading ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {[1, 2, 3, 4].map((i) => (
+                        <Card key={i} className="overflow-hidden">
+                          <Skeleton className="h-48 w-full" />
+                          <CardContent className="p-4">
+                            <Skeleton className="h-4 w-32 mb-2" />
+                            <Skeleton className="h-6 w-full mb-4" />
+                            <Skeleton className="h-4 w-full" />
+                            <Skeleton className="h-4 w-2/3 mt-2" />
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {news.map((item, index) => (
+                        <a 
+                          key={index} 
+                          href={item.url} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="group"
+                        >
+                          <Card className="overflow-hidden h-full hover:shadow-xl transition-shadow duration-200 border border-gray-100 group-hover:border-blue-100">
+                            {item.urlToImage && (
+                              <div className="w-full h-40 overflow-hidden">
+                                <img 
+                                  src={item.urlToImage} 
+                                  alt={item.title} 
+                                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                />
+                              </div>
+                            )}
+                            <CardContent className={cn("p-4", !item.urlToImage && "pt-5")}>
+                              <div className="flex items-center justify-between mb-2">
+                                <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
+                                  {item.source.name}
+                                </span>
+                                <span className="text-xs text-muted-foreground">
+                                  {formatDate(item.publishedAt)}
+                                </span>
+                              </div>
+                              <h3 className="font-semibold line-clamp-2 group-hover:text-blue-600 transition-colors">
+                                {item.title}
+                              </h3>
+                              <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
+                                {item.description}
+                              </p>
+                            </CardContent>
+                          </Card>
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                </TabsContent>
+                
+                <TabsContent value="trending">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {news.slice().reverse().map((item, index) => (
+                      <a 
+                        key={index} 
+                        href={item.url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="group"
+                      >
+                        <Card className="overflow-hidden h-full hover:shadow-xl transition-shadow duration-200 border border-gray-100 group-hover:border-blue-100">
+                          {item.urlToImage && (
+                            <div className="w-full h-40 overflow-hidden">
+                              <img 
+                                src={item.urlToImage} 
+                                alt={item.title} 
+                                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                              />
+                            </div>
+                          )}
+                          <CardContent className={cn("p-4", !item.urlToImage && "pt-5")}>
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
+                                {item.source.name}
+                              </span>
+                              <span className="text-xs text-muted-foreground">
+                                {formatDate(item.publishedAt)}
+                              </span>
+                            </div>
+                            <h3 className="font-semibold line-clamp-2 group-hover:text-blue-600 transition-colors">
+                              {item.title}
+                            </h3>
+                            <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
+                              {item.description}
+                            </p>
+                          </CardContent>
+                        </Card>
+                      </a>
+                    ))}
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="research">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {news.filter((_, i) => i % 2 === 0).map((item, index) => (
+                      <a 
+                        key={index} 
+                        href={item.url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="group"
+                      >
+                        <Card className="overflow-hidden h-full hover:shadow-xl transition-shadow duration-200 border border-gray-100 group-hover:border-blue-100">
+                          {item.urlToImage && (
+                            <div className="w-full h-40 overflow-hidden">
+                              <img 
+                                src={item.urlToImage} 
+                                alt={item.title} 
+                                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                              />
+                            </div>
+                          )}
+                          <CardContent className={cn("p-4", !item.urlToImage && "pt-5")}>
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
+                                {item.source.name}
+                              </span>
+                              <span className="text-xs text-muted-foreground">
+                                {formatDate(item.publishedAt)}
+                              </span>
+                            </div>
+                            <h3 className="font-semibold line-clamp-2 group-hover:text-blue-600 transition-colors">
+                              {item.title}
+                            </h3>
+                            <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
+                              {item.description}
+                            </p>
+                          </CardContent>
+                        </Card>
+                      </a>
+                    ))}
+                  </div>
+                </TabsContent>
+              </>
+            )}
           </Tabs>
         </CardContent>
       </Card>
