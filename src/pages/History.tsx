@@ -11,7 +11,7 @@ export interface HistoryEntry {
   id: string;
   prompt: string;
   geminiResponse: string;
-  grokResponse: string;
+  groqResponse: string;  // Changed from grokResponse to groqResponse
   timestamp: number;
 }
 

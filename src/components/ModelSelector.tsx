@@ -10,7 +10,7 @@ import {
 import { AI_MODELS } from '@/utils/apiService';
 
 interface ModelSelectorProps {
-  aiType: 'gemini' | 'groq';
+  aiType: 'gemini' | 'groq';  // Updated from 'grok' to 'groq'
   selectedModel: string;
   onChange: (value: string) => void;
   disabled?: boolean;
@@ -54,4 +54,3 @@ const ModelSelector: React.FC<ModelSelectorProps> = ({
 };
 
 export default ModelSelector;
-
