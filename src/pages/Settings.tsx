@@ -10,29 +10,29 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 
 const Settings: React.FC = () => {
   const [geminiKey, setGeminiKey] = useState('');
-  const [grokKey, setGrokKey] = useState('');
+  const [groqKey, setGroqKey] = useState('');
   const [showGeminiKey, setShowGeminiKey] = useState(false);
-  const [showGrokKey, setShowGrokKey] = useState(false);
+  const [showGroqKey, setShowGroqKey] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [apiKeyStatus, setApiKeyStatus] = useState({
     gemini: false,
-    grok: false,
+    groq: false,
   });
   const { toast } = useToast();
 
   useEffect(() => {
     // Load saved API keys from localStorage
     const savedGeminiKey = localStorage.getItem('gemini-api-key');
-    const savedGrokKey = localStorage.getItem('grok-api-key');
+    const savedGroqKey = localStorage.getItem('groq-api-key');
     
     if (savedGeminiKey) {
       setGeminiKey(savedGeminiKey);
       setApiKeyStatus(prev => ({ ...prev, gemini: true }));
     }
     
-    if (savedGrokKey) {
-      setGrokKey(savedGrokKey);
-      setApiKeyStatus(prev => ({ ...prev, grok: true }));
+    if (savedGroqKey) {
+      setGroqKey(savedGroqKey);
+      setApiKeyStatus(prev => ({ ...prev, groq: true }));
     }
   }, []);
 
@@ -47,8 +47,8 @@ const Settings: React.FC = () => {
       console.warn('Gemini key may not be valid - missing expected pattern');
     }
     
-    if (type === 'grok' && !key.includes('xAI')) {
-      console.warn('Grok key may not be valid - missing expected pattern');
+    if (type === 'groq' && !key.includes('xAI')) {
+      console.warn('Groq key may not be valid - missing expected pattern');
     }
     
     return true;
@@ -61,28 +61,28 @@ const Settings: React.FC = () => {
       
       // Validate inputs
       const geminiValid = validateApiKey(geminiKey, 'gemini');
-      const grokValid = validateApiKey(grokKey, 'grok');
+      const groqValid = validateApiKey(groqKey, 'groq');
       
-      if (!geminiValid || !grokValid) {
+      if (!geminiValid || !groqValid) {
         throw new Error("Please enter valid API keys. Keys should be at least 8 characters long.");
       }
 
       // Save API keys to localStorage
       localStorage.setItem('gemini-api-key', geminiKey.trim());
-      localStorage.setItem('grok-api-key', grokKey.trim());
+      localStorage.setItem('groq-api-key', groqKey.trim());
       
       // Verify keys were saved
       const savedGeminiKey = localStorage.getItem('gemini-api-key');
-      const savedGrokKey = localStorage.getItem('grok-api-key');
+      const savedGroqKey = localStorage.getItem('groq-api-key');
       
-      if (!savedGeminiKey || !savedGrokKey) {
+      if (!savedGeminiKey || !savedGroqKey) {
         throw new Error("Failed to save API keys. Please check your browser settings and try again.");
       }
       
       // Update status
       setApiKeyStatus({
         gemini: Boolean(savedGeminiKey),
-        grok: Boolean(savedGrokKey),
+        groq: Boolean(savedGroqKey),
       });
       
       // Show success state and toast
@@ -96,7 +96,7 @@ const Settings: React.FC = () => {
       
       console.log("API keys saved successfully:", {
         geminiSaved: Boolean(savedGeminiKey),
-        grokSaved: Boolean(savedGrokKey)
+        groqSaved: Boolean(savedGroqKey)
       });
     } catch (error) {
       console.error("Error saving API keys:", error);
@@ -109,7 +109,7 @@ const Settings: React.FC = () => {
   };
 
   const toggleShowGeminiKey = () => setShowGeminiKey(!showGeminiKey);
-  const toggleShowGrokKey = () => setShowGrokKey(!showGrokKey);
+  const toggleShowGroqKey = () => setShowGroqKey(!showGroqKey);
 
   return (
     <div className="min-h-screen flex flex-col items-center">
@@ -166,28 +166,28 @@ const Settings: React.FC = () => {
               </div>
               
               <div className="space-y-2">
-                <label htmlFor="grok-key" className="text-sm font-medium">
-                  Grok API Key {apiKeyStatus.grok && <span className="text-green-500 text-xs ml-2">(✓ Set)</span>}
+                <label htmlFor="groq-key" className="text-sm font-medium">
+                  Groq API Key {apiKeyStatus.groq && <span className="text-green-500 text-xs ml-2">(✓ Set)</span>}
                 </label>
                 <div className="relative">
                   <Input
-                    id="grok-key"
-                    type={showGrokKey ? "text" : "password"}
-                    placeholder="Enter your Grok API key"
-                    value={grokKey}
-                    onChange={(e) => setGrokKey(e.target.value)}
+                    id="groq-key"
+                    type={showGroqKey ? "text" : "password"}
+                    placeholder="Enter your Groq API key"
+                    value={groqKey}
+                    onChange={(e) => setGroqKey(e.target.value)}
                     className="w-full pr-10"
                   />
                   <button 
                     type="button"
-                    onClick={toggleShowGrokKey}
+                    onClick={toggleShowGroqKey}
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   >
-                    {showGrokKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    {showGroqKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Get your Grok API key from <a href="https://x.ai/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">X.AI</a>
+                  Get your Groq API key from <a href="https://console.groq.com/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Groq Console</a>
                 </p>
               </div>
               
@@ -221,8 +221,8 @@ const Settings: React.FC = () => {
                     )}
                   </div>
                   <div className="flex justify-between items-center mt-2">
-                    <span className="text-sm">Grok API Key:</span>
-                    {apiKeyStatus.grok ? (
+                    <span className="text-sm">Groq API Key:</span>
+                    {apiKeyStatus.groq ? (
                       <span className="text-green-500 font-medium flex items-center gap-1">
                         <Check className="w-4 h-4" /> Set
                       </span>
@@ -234,7 +234,7 @@ const Settings: React.FC = () => {
                   </div>
                   <div className="text-sm mt-3 text-muted-foreground">
                     <p>
-                      {apiKeyStatus.gemini && apiKeyStatus.grok 
+                      {apiKeyStatus.gemini && apiKeyStatus.groq 
                         ? "All API keys are configured. You can now use the AI comparison feature."
                         : "Please set up both API keys to use the AI comparison feature."}
                     </p>
