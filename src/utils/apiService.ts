@@ -8,7 +8,7 @@ interface AIResponse {
 
 // Default models - updated to current working versions
 export const DEFAULT_MODELS = {
-  gemini: "gemini-pro",
+  gemini: "gemini-2.5-flash",
   groq: "llama-3.3-70b-versatile"
 };
 
