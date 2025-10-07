@@ -8,8 +8,8 @@ interface AIResponse {
 
 // Default models - updated to current working versions
 export const DEFAULT_MODELS = {
-  gemini: "gemini-1.5-flash",
-  groq: "llama-3.1-70b-versatile"
+  gemini: "gemini-1.5-flash-latest",
+  groq: "llama-3.3-70b-versatile"
 };
 
 // Call Gemini API
@@ -21,8 +21,8 @@ export const callGeminiAPI = async (
   try {
     console.log(`Calling Gemini API with model: ${model}`);
     
-    // API URL depends on the model
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+    // API URL depends on the model (use v1 and -latest alias for stability)
+    const apiUrl = `https://generativelanguage.googleapis.com/v1/models/${model}:generateContent`;
     
     const response = await fetch(`${apiUrl}?key=${apiKey}`, {
       method: 'POST',
@@ -77,39 +77,55 @@ export const callGroqAPI = async (
 ): Promise<AIResponse> => {
   try {
     console.log(`Calling Groq API with model: ${model}`);
-    
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${apiKey}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        model: model,
-        messages: [
-          {
-            role: "user",
-            content: prompt
-          }
-        ],
-        temperature: 0.7,
-        max_tokens: 1024
-      })
-    });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error("Groq API error:", errorData);
-      return { 
-        text: "", 
-        error: `Error: ${errorData.error?.message || "Failed to get response from Groq"}` 
-      };
+    const tryModels = Array.from(new Set([
+      model,
+      "llama-3.3-70b-versatile",
+      "llama-3.1-8b-instant",
+      "mixtral-8x7b-32768",
+    ]));
+
+    let lastErrorMsg: string | undefined;
+
+    for (const m of tryModels) {
+      const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: m,
+          messages: [
+            { role: "user", content: prompt }
+          ],
+          temperature: 0.7,
+          max_tokens: 1024,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const responseText = data.choices?.[0]?.message?.content || "";
+        if (m !== model) console.warn(`Groq model fallback used: ${m}`);
+        return { text: responseText };
+      }
+
+      let errorData: any = {};
+      try { errorData = await response.json(); } catch {}
+      const code = errorData?.error?.code;
+      const message = errorData?.error?.message || `HTTP ${response.status}`;
+      console.error(`Groq API error for model ${m}:`, message);
+      lastErrorMsg = message;
+
+      const isModelIssue = code === "model_decommissioned" || /decommissioned|not found|unsupported/i.test(message || "");
+      if (!isModelIssue) {
+        return { text: "", error: `Error: ${message || "Failed to get response from Groq"}` };
+      }
+      // otherwise continue to next model
     }
 
-    const data = await response.json();
-    const responseText = data.choices?.[0]?.message?.content || "";
-    return { text: responseText };
-
+    return { text: "", error: `Error: ${lastErrorMsg || "All Groq models failed"}` };
   } catch (error) {
     console.error("Error calling Groq API:", error);
     return { 
