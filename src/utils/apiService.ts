@@ -8,7 +8,7 @@ interface AIResponse {
 
 // Default models - updated to current working versions
 export const DEFAULT_MODELS = {
-  gemini: "gemini-1.5-flash",
+  gemini: "gemini-1.5-flash-latest",
   groq: "llama-3.3-70b-versatile"
 };
 
@@ -21,8 +21,8 @@ export const callGeminiAPI = async (
   try {
     console.log(`Calling Gemini API with model: ${model}`);
     
-    // API URL depends on the model (use v1 and -latest alias for stability)
-    const apiUrl = `https://generativelanguage.googleapis.com/v1/models/${model}:generateContent`;
+    // Use v1beta endpoint for Gemini 1.5 models
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
     
     const response = await fetch(`${apiUrl}?key=${apiKey}`, {
       method: 'POST',
