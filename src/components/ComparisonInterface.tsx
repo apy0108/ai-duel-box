@@ -83,18 +83,15 @@ const ComparisonInterface: React.FC = () => {
     }
     
     try {
-      // Using default models
-      const geminiModel = "gemini-pro";
-      const groqModel = "llama2-70b-4096";
-      
-      const geminiResponse = await callGeminiAPI(inputPrompt, geminiKey, geminiModel);
+      // Using latest working models automatically
+      const geminiResponse = await callGeminiAPI(inputPrompt, geminiKey);
       if (geminiResponse.error) {
         setGeminiError(geminiResponse.error);
       } else {
         setGeminiOutput(geminiResponse.text);
       }
       
-      const groqResponse = await callGroqAPI(inputPrompt, groqKey, groqModel);
+      const groqResponse = await callGroqAPI(inputPrompt, groqKey);
       if (groqResponse.error) {
         setGroqError(groqResponse.error);
       } else {

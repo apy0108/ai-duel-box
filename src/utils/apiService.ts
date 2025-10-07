@@ -6,25 +6,17 @@ interface AIResponse {
   error?: string;
 }
 
-// Model options 
-export const AI_MODELS = {
-  gemini: [
-    { id: "gemini-pro", name: "Gemini Pro" },
-    { id: "gemini-1.5-pro", name: "Gemini 1.5 Pro" },
-    { id: "gemini-1.5-flash", name: "Gemini 1.5 Flash" }
-  ],
-  groq: [
-    { id: "llama2-70b-4096", name: "LLaMA2 70B" },
-    { id: "mixtral-8x7b-32768", name: "Mixtral 8x7B" },
-    { id: "gemma-7b-it", name: "Gemma 7B" }
-  ]
+// Default models - updated to current working versions
+export const DEFAULT_MODELS = {
+  gemini: "gemini-1.5-flash",
+  groq: "llama-3.1-70b-versatile"
 };
 
 // Call Gemini API
 export const callGeminiAPI = async (
   prompt: string, 
   apiKey: string, 
-  model: string = "gemini-pro"
+  model: string = DEFAULT_MODELS.gemini
 ): Promise<AIResponse> => {
   try {
     console.log(`Calling Gemini API with model: ${model}`);
@@ -81,7 +73,7 @@ export const callGeminiAPI = async (
 export const callGroqAPI = async (
   prompt: string, 
   apiKey: string,
-  model: string = "llama2-70b-4096"
+  model: string = DEFAULT_MODELS.groq
 ): Promise<AIResponse> => {
   try {
     console.log(`Calling Groq API with model: ${model}`);
